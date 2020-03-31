@@ -7,7 +7,7 @@ data = np.loadtxt("dataset.csv", delimiter=",")
 alpha = 0.01
 t0 = 0
 t1 = 0
-iterations = 70000
+iterations = 100000
 m = len(data)
 
 # normalize data between 0 and 1
@@ -35,21 +35,21 @@ def squared_error():
 # train data
 i = 0
 while i < iterations:
-    gradient_t0 = (1 / m) * \
-        sum([(hypothesis(x[i]) - y[i]) for i in range(m)])
-    gradient_t1 = (1 / m) * \
-        sum([((hypothesis(x[i]) - y[i]) * x[i]) for i in range(m)])
 
-    temp_t0 = t0 - alpha * gradient_t0
-    temp_t1 = t1 - alpha * gradient_t1
+    for d in range(m):
+        gradient = (hypothesis(x[d]) - y[d]) * x[d]
+        # gradient_t1 = (hypothesis(x[d]) - y[d]) * x[d]
 
-    t0 = temp_t0
-    t1 = temp_t1
-    # line1.set_ydata([hypothesis(x[i]) for i in range(m)])
-    # plt.draw()
-    i += 1
-    print(f"Error: {squared_error()} | I: {i}")
-    # plt.pause(0.00001)
+        temp_t0 = t0 - alpha * gradient
+        temp_t1 = t1 - alpha * gradient
+
+        t0 = temp_t0
+        t1 = temp_t1
+        # line1.set_ydata([hypothesis(x[i]) for i in range(m)])
+        # plt.draw()
+        i += 1
+        print(f"Error: {squared_error()} | I: {i}")
+        # plt.pause(0.00001)
 
 print(f"\nSlope: {t0}\nIntercept(y): {t1}")
 
