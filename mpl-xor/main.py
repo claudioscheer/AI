@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import numpy as np
 
 train_data = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float).cuda()
 train_data_y = torch.tensor([[0], [1], [1], [1]], dtype=torch.float).cuda()
