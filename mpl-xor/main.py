@@ -16,7 +16,7 @@ class MultilayerPerceptron(nn.Module):
         return self.layers(x)
 
 
-model = MultilayerPerceptron(5)
+model = MultilayerPerceptron(3)
 model.cuda()
 
 loss_function = nn.MSELoss()
