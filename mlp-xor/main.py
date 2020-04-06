@@ -16,11 +16,11 @@ class MultilayerPerceptron(nn.Module):
         return self.layers(x)
 
 
-model = MultilayerPerceptron(3)
+model = MultilayerPerceptron(10)
 model.cuda()
 
 loss_function = nn.MSELoss()
-optimization_function = torch.optim.Adam(model.parameters(), lr=0.001)
+optimization_function = torch.optim.SGD(model.parameters(), lr=0.01)
 
 model.train()
 
