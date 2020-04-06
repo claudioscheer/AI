@@ -2,23 +2,25 @@ import torch
 import torch.nn as nn
 
 train_data = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float).cuda()
-train_data_y = torch.tensor([[0], [1], [1], [1]], dtype=torch.float).cuda()
+train_data_y = torch.tensor([[0], [1], [1], [0]], dtype=torch.float).cuda()
 
 
 class MultilayerPerceptron(nn.Module):
-    def __init__(self):
+    def __init__(self, hidden_layer_size):
         super(MultilayerPerceptron, self).__init__()
-        self.layers = nn.Sequential(nn.Linear(2, 2), nn.Sigmoid(), nn.Linear(2, 1))
+        self.layers = nn.Sequential(
+            nn.Linear(2, hidden_layer_size), nn.ReLU(), nn.Linear(hidden_layer_size, 1)
+        )
 
     def forward(self, x):
         return self.layers(x)
 
 
-model = MultilayerPerceptron()
+model = MultilayerPerceptron(5)
 model.cuda()
 
-loss_function = torch.nn.L1Loss()
-optimization_function = torch.optim.SGD(model.parameters(), lr=0.03)
+loss_function = nn.MSELoss()
+optimization_function = torch.optim.Adam(model.parameters(), lr=0.001)
 
 model.train()
 
