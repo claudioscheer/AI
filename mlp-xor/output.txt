@@ -1,0 +1,5 @@
+tensor(1.9984e-15, device='cuda:0', grad_fn=<MseLossBackward>)
+tensor([[5.9605e-08],
+        [1.0000e+00],
+        [1.0000e+00],
+        [2.9802e-08]], device='cuda:0', grad_fn=<AddmmBackward>)
