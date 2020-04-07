@@ -20,11 +20,13 @@ model = MultilayerPerceptron(10)
 model.cuda()
 
 loss_function = nn.MSELoss()
-optimization_function = torch.optim.SGD(model.parameters(), lr=0.01)
+optimization_function = torch.optim.Adam(
+    model.parameters(), lr=0.01, betas=(0.99, 0.995), weight_decay=0
+)
 
 model.train()
 
-for _ in range(10000):
+for _ in range(5000):
     optimization_function.zero_grad()
     y_predicted = model(train_data)
     loss = loss_function(y_predicted.float(), train_data_y)
