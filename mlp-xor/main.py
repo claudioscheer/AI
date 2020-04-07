@@ -26,10 +26,13 @@ optimization_function = torch.optim.Adam(
 
 model.train()
 
+loss_values = []
 for _ in range(5000):
     optimization_function.zero_grad()
     y_predicted = model(train_data)
     loss = loss_function(y_predicted.float(), train_data_y)
+    loss_values.append(loss.item())
+    
     loss.backward()
     optimization_function.step()
 
