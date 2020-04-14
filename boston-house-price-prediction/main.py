@@ -2,9 +2,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data.sampler import SubsetRandomSampler
-from pad import PadCollate
 from dataset import BostonDataset
 from network import NeuralNetwork
+import progressbar
+
 
 dataset = BostonDataset("dataset.csv")
 dataset_size = len(dataset)
@@ -26,24 +27,37 @@ test_sampler = SubsetRandomSampler(test_indices)
 train_loader = torch.utils.data.DataLoader(
     dataset, batch_size=batch_size, sampler=train_sampler
 )
-test_loader = torch.utils.data.DataLoader(
-    dataset, batch_size=batch_size, sampler=test_sampler
-)
+test_loader = torch.utils.data.DataLoader(dataset, batch_size=1, sampler=test_sampler)
 
-model = NeuralNetwork([8, 16, 8])
+model = NeuralNetwork([8, 32, 32, 16])
 model.cuda()
 
 loss_function = nn.MSELoss()
 optimization_function = torch.optim.Adam(
-    model.parameters(), lr=0.01, betas=(0.99, 0.995), weight_decay=0
+    model.parameters(), lr=0.01, betas=(0.99, 0.995), weight_decay=0.1
 )
 
 model.train()
-num_epochs = 10
-for _ in range(num_epochs):
+num_epochs = 1000
+for _ in progressbar.progressbar(range(num_epochs)):
     for batch_index, (x, y) in enumerate(train_loader):
         optimization_function.zero_grad()
         y_predicted = model(x)
-        loss = loss_function(y_predicted.float(), y)
-        loss.backward()
+        error = loss_function(y_predicted.float(), y)
+        error.backward()
         optimization_function.step()
+
+model.eval()
+with torch.no_grad():
+    # predicted_values = torch.tensor([]).cuda()
+    # correct_values = torch.tensor([]).cuda()
+    for batch_index, (x, y) in enumerate(test_loader):
+        y_predicted = model(x)
+        error = loss_function(y_predicted.float(), y)
+        print(f"Error: {error}; Prediction: {y_predicted}; Correct: {y}")
+        # predicted_values = torch.cat((predicted_values, y_predicted), -1)
+        # correct_values = torch.cat((correct_values, y), -1)
+
+    # print(predicted_values.cpu().numpy()[0])
+    # print(correct_values.cpu().numpy()[0])
+    # print(accuracy)

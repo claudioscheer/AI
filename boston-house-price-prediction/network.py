@@ -12,7 +12,9 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_layers_size[1], hidden_layers_size[2]),
             nn.ReLU(),
-            nn.Linear(hidden_layers_size[2], 1),
+            nn.Linear(hidden_layers_size[2], hidden_layers_size[3]),
+            nn.ReLU(),
+            nn.Linear(hidden_layers_size[3], 1),
         )
 
     def forward(self, x):
