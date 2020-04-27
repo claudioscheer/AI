@@ -4,6 +4,7 @@ import torch.nn as nn
 from torch.utils.data.sampler import SubsetRandomSampler
 from dataset import BostonDataset
 from network import NeuralNetwork
+from sklearn.metrics import r2_score
 import progressbar
 
 
@@ -29,16 +30,16 @@ train_loader = torch.utils.data.DataLoader(
 )
 test_loader = torch.utils.data.DataLoader(dataset, batch_size=1, sampler=test_sampler)
 
-model = NeuralNetwork([8, 32, 32, 16])
+model = NeuralNetwork([16, 32, 64])
 model.cuda()
 
 loss_function = nn.MSELoss()
 optimization_function = torch.optim.Adam(
-    model.parameters(), lr=0.01, betas=(0.99, 0.995), weight_decay=0.1
+    model.parameters(), lr=0.003, betas=(0.99, 0.995), weight_decay=0.1
 )
 
 model.train()
-num_epochs = 1000
+num_epochs = 10000
 for _ in progressbar.progressbar(range(num_epochs)):
     for batch_index, (x, y) in enumerate(train_loader):
         optimization_function.zero_grad()
@@ -49,15 +50,13 @@ for _ in progressbar.progressbar(range(num_epochs)):
 
 model.eval()
 with torch.no_grad():
-    # predicted_values = torch.tensor([]).cuda()
-    # correct_values = torch.tensor([]).cuda()
+    predicted_values = torch.tensor([]).cuda()
+    correct_values = torch.tensor([]).cuda()
     for batch_index, (x, y) in enumerate(test_loader):
         y_predicted = model(x)
         error = loss_function(y_predicted.float(), y)
-        print(f"Error: {error}; Prediction: {y_predicted}; Correct: {y}")
-        # predicted_values = torch.cat((predicted_values, y_predicted), -1)
-        # correct_values = torch.cat((correct_values, y), -1)
+        predicted_values = torch.cat((predicted_values, y_predicted), -1)
+        correct_values = torch.cat((correct_values, y), -1)
 
-    # print(predicted_values.cpu().numpy()[0])
-    # print(correct_values.cpu().numpy()[0])
-    # print(accuracy)
+    r2 = r2_score(correct_values.cpu().numpy()[0], predicted_values.cpu().numpy()[0])
+    print(f"R2 score: {r2}")
